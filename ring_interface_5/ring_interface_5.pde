@@ -1,11 +1,10 @@
 import hypermedia.net.*;
 import java.util.Map;
+import java.util.Locale;
+import java.text.NumberFormat;
 
 UDP udp;
-//import oscP5.*;
 import netP5.*;
-//OscP5 oscP5;
-//NetAddress listenLocation, sendLocation;
 ClearButton clear;
 SendButton send;
 Reconfig reconfig;
@@ -27,14 +26,17 @@ SecsBox secsInput;
 CueIndex cueIndex;
 ColorBox rInput, rInputMin, gInput, gInputMin, bInput, bInputMin, wwInput, wwInputMin, cwInput, cwInputMin;
 ArrayList<ColorBox> colorBoxes = new ArrayList();
-List rollList, pitchList, yawList;
-ArrayList<List> lists = new ArrayList();
+//List rollList, pitchList, yawList;
+//ArrayList<List> lists = new ArrayList();
 //Rotator roll, pitch, yaw;
 Rotator roll, pitch;
 ArrayList<Rotator> rotators = new ArrayList();
 Message message;
 CueList cueList;
 InputMess inputMess;
+
+Locale english = new Locale("en");
+NumberFormat englishNF = NumberFormat.getInstance(english);
 
 void setup() {
   size(600, 600);
@@ -43,10 +45,10 @@ void setup() {
   udp = new UDP( this, 12000);
   udp.log( true );
   udp.listen( true );
-  println("me ", udp.port(), ", ",udp.address());
-  
+  println("me ", udp.port(), ", ", udp.address());
+
   displayColor =new DisplayColor(50, 265, 130, 130);
-  listsSetup();
+  //listsSetup();
   rotatorsSetup();
   faderSetup();
   inputsSetup();
@@ -66,16 +68,16 @@ void draw() {
   }
   displayColor.display();
   displayColor.colorRect();
-  for (List c : lists) {
-    c.update();
-    c.display();
-  }
+  //for (List c : lists) {
+  //  c.update();
+  //  c.display();
+  //}
   //roll.update(mouseX);
   //pitch.update(mouseY);
   //inputMess.receive();
   roll.update(inputMess.yVal, (-1)*inputMess.pVal);
   pitch.update(inputMess.yVal, (-1)*inputMess.rVal);
-  
+
   for (Rotator r : rotators) {
     r.display();
   }
@@ -99,24 +101,29 @@ void draw() {
 }
 
 void keyPressed() {
+  //println(keyCode);
   secsInput.input();
   cueIndex.input();
   for (ColorBox i : colorBoxes) {
     i.input();
   }
-  if (keyCode == 40) {
+  if (keyCode == 39) {
     next.action();
     next.backColor = next.pressed;
     next.actionCalled = false;
   }
-  if (keyCode == 38) {
+  if (keyCode == 37) {
     prev.action();
     prev.actionCalled = false;
   }
   if (keyCode == 65) {
     add.action();
     add.actionCalled = false;
-  } 
+  }
+  if (keyCode == 10) {
+    send.action();
+    send.actionCalled = false;
+  }
 }
 
 void keyReleased() {

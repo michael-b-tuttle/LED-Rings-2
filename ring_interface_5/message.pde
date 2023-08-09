@@ -3,17 +3,17 @@ class Message {
   XML document;
   //String ip       = "192.168.0.100";
   //ring 1
-  //String ip       = "192.168.0.151";
+  String ip       = "192.168.0.151";
   //ring 2
   //String ip       = "192.168.1.152";
-  String ip       = "192.168.0.152";
+    //String ip       = "192.168.0.152";
   int port        = 6100;
 
   void sendMessage() {
     XML m = createXML();
     udp.send(m.format(0), ip, port);
     //maybe this isn't working because I've hard coded it to false...
-    reconfig.reset = false;
+    //reconfig.reset = false;
   }
 
   void sendGoal(XML _m) {
@@ -44,13 +44,13 @@ class Message {
     float cwFaderMin = cwFader.faderMin;
 
     int gyro = gyroSwitch.state;
-    int roll = rollList.currentSelection;
-    int pitch = pitchList.currentSelection;
-    int yaw = yawList.currentSelection;
+    //int roll = rollList.currentSelection;
+    //int pitch = pitchList.currentSelection;
+    //int yaw = yawList.currentSelection;
     int time = int(secsInput.value);
     time *= 1000;
-    if (time < 1) time = 100;
-    boolean reset = ((Reconfig)reconfig).reset;
+    if (time < 1) time = 50;
+    //boolean reset = ((Reconfig)reconfig).reset;
     xml = new XML("cue");
     xml.addChild("index");
     xml.getChild("index").setIntContent(index);
@@ -73,12 +73,12 @@ class Message {
     xml.addChild("cwFaderMax").setFloatContent(cwFaderMax);
 
     xml.addChild("gyroActive").setIntContent(gyro);
-    xml.addChild("rollAssign").setIntContent(roll);
-    xml.addChild("pitchAssign").setIntContent(pitch);
-    xml.addChild("yawAssign").setIntContent(yaw);
-    xml.addChild("time").setIntContent(time);
-    xml.addChild("reconfig").setIntContent(int(reset)); //0 or 1
-    reconfig.reset = false;
+    //xml.addChild("rollAssign").setIntContent(roll);
+    //xml.addChild("pitchAssign").setIntContent(pitch);
+    //xml.addChild("yawAssign").setIntContent(yaw);
+    xml.addChild("time").setFloatContent(time);
+    //xml.addChild("reconfig").setIntContent(int(reset)); //0 or 1
+    //reconfig.reset = false;
     return xml;
   }
 }

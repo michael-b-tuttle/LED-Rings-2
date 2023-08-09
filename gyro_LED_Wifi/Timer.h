@@ -17,14 +17,14 @@ class Timer {
     void calculate() {
       if (counting) {
         amount = (millis()-startTime) / countdownLength;
-        Serial.print("amount ");
-        Serial.println(amount);
+//        Serial.print("amount ");
+//        Serial.println(amount);
       }
       if (amount > 1) {
         amount = 1;
         counting = false;
-        Serial.print("counting ");
-        Serial.println(counting);
+//        Serial.print("counting ");
+//        Serial.println(counting);
       }
     }
 };

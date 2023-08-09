@@ -125,10 +125,10 @@ void xmlEvent(char packBuffer[], int packSize) {
       if (matchTag("<reconfig>")) {
         int value = std::stoi(dataStr, &sz);
         if (value == 1) {
-          gyro.recalibrate = true;
+          //gyro.recalibrate = true;
         }
         else if (value == 0) {
-          gyro.recalibrate = false;
+          //gyro.recalibrate = false;
         }
       }
 

@@ -1,23 +1,16 @@
 //sends position data back to laptop
-//this seems to crash the arduino's gyroscope after a minute or so. I can't figure out why
 #ifndef TRANSMITTER_H
 #define TRANSMITTER_H
+
+#include <Arduino_LSM6DSOX.h>
 
 class Transmitter {
   public:
     int interval = 1000;
     int lastMilli = 0;
     bool receivedFirstMessage = false;
-    //    int availableMemory() {
-    //      // Use 1024 with ATmega168
-    //      int size = 2048;
-    //      byte *buf;
-    //      while ((buf = (byte *) malloc(--size)) == NULL);
-    //      free(buf);
-    //      return size;
-    //    }
-    /*
-      void sendData() {
+
+    void sendData() {
       if (receivedFirstMessage) {
         if (millis() - lastMilli > interval) {
           //          float r = gyro.normalizeAngle(gyro.roll, 0);
@@ -26,44 +19,52 @@ class Transmitter {
           float r = gyro.roll;
           float p = gyro.pitch;
           float y = gyro.yaw;
-          if (isnan(r)) {
-            Serial.println("not working!");
-          }
-
           char posMessage[75];
           sprintf(posMessage, "r %f, p %f, y %f ", r, p, y);
-          //Udp.beginPacket(Udp.remoteIP(), remotePort);
-          //          Udp.beginPacket("192.168.1.4", 12000);
-          //          Udp.write(posMessage);
-          //          Udp.endPacket();
-          //          free(posMessage);
+          IPAddress remoteIp = Udp.remoteIP();
+          Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+          //          Udp.beginPacket("192.168.1.100", 12000);
+          Udp.write(posMessage);
+          Udp.endPacket();
           lastMilli = millis();
-      //          Serial.print("position ");
-          Serial.println(posMessage);
-      //          Serial.println(r);
+          Serial.print("r ");
+          Serial.print("\t");
+          Serial.print(r);
+          Serial.print("p ");
+          Serial.print("\t");
+          Serial.print(p);
+          Serial.print("y ");
+          Serial.print("\t");
+          Serial.println(y);
+          //          Serial.println(posMessage);
+        }
+      }
+    }
 
-          //          Serial.print("memory ");
-          // free RAM check for debugging. SRAM for ATmega328p = 2048Kb.
-          // Serial.println(availableMemory());
+    void receiveMessage() {
+      int packetSize = Udp.parsePacket();
+      if (packetSize) {
+        receivedFirstMessage = true;
+        Serial.print("\nReceived packet of size ");
+        Serial.println(packetSize);
+        Serial.print("From ");
+        IPAddress remoteIp = Udp.remoteIP();
+        Serial.print(remoteIp);
+        Serial.print(", port ");
+        Serial.println(Udp.remotePort());
+        // read the packet into packetBufffer
+        int len = Udp.read(packetBuffer, packetSize);
+        if (len > 0) {
+          packetBuffer[len] = 0;
         }
-      }
-      }
-    */
-    void sendData() {
-      if (millis() - lastMilli > interval) {
-        float r = gyro.roll;
-        float p = gyro.pitch;
-        float y = gyro.yaw;
-        if (isnan(r)) {
-          Serial.println("not working!");
-        }
-        lastMilli = millis();
-        char posMessage[75];
-        sprintf(posMessage, "r %f, p %f, y %f ", r, p, y);
-        Serial.println(posMessage);
-      }
-      else {
-        Serial.print("nope!");
+        Serial.println("Contents:");
+        Serial.println();
+        Serial.println(packetBuffer);
+        xmlEvent(packetBuffer, packetSize);
+        Udp.beginPacket(Udp.remoteIP(), 12000);
+        Udp.write(ReplyBuffer);
+        Udp.endPacket();
+        printData();
       }
     }
 };
